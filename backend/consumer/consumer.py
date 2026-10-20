@@ -1,4 +1,6 @@
 import json
+from collections import defaultdict, deque
+from datetime import datetime, timedelta
 
 from kafka import KafkaConsumer
 
@@ -7,11 +9,14 @@ KAFKA_TOPIC = "transactions"
 CONSUMER_GROUP = "fraud-detection"
 
 HIGH_VALUE_LIMIT = 10000
+TRANSACTION_LIMIT = 4
+TIME_WINDOW_SECONDS = 60
+
+customer_transactions = defaultdict(deque)
 
 
 def create_consumer():
-    """Create a connection to the Kafka topic."""
-
+    
     return KafkaConsumer(
         KAFKA_TOPIC,
         bootstrap_servers=KAFKA_BROKER,
@@ -23,12 +28,30 @@ def create_consumer():
 
 
 def detect_fraud(transaction):
-    """Check whether a transaction matches a fraud rule."""
-
+    
     alerts = []
 
     if transaction["amount"] >= HIGH_VALUE_LIMIT:
         alerts.append("ALTO_VALOR")
+
+    customer_id = transaction["customer_id"]
+    transaction_time = datetime.fromisoformat(transaction["timestamp"])
+
+    recent_transactions = customer_transactions[customer_id]
+    recent_transactions.append(transaction_time)
+
+    cutoff_time = transaction_time - timedelta(
+        seconds=TIME_WINDOW_SECONDS
+    )
+
+    while (
+        recent_transactions
+        and recent_transactions[0] <= cutoff_time
+    ):
+        recent_transactions.popleft()
+
+    if len(recent_transactions) >= TRANSACTION_LIMIT:
+        alerts.append("TEMPO_60s")
 
     return alerts
 
