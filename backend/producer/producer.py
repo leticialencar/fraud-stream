@@ -1,48 +1,15 @@
-import json
-import random
 import time
-import uuid
-from datetime import datetime, timezone
 
-from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
-KAFKA_BROKER = "localhost:9092"
-KAFKA_TOPIC = "transactions"
+from kafka_client import (
+    create_producer,
+    KAFKA_BROKER,
+    KAFKA_TOPIC,
+)
+from transaction import generate_transaction
+
 TRANSACTION_INTERVAL = 3
-
-CUSTOMERS = ["C001", "C002", "C003", "C004", "C005"]
-
-CITIES = [
-    "Juazeiro do Norte",
-    "Barbalha",
-    "Crato",
-    "Caririaçu",
-    "Missão Velha",
-]
-
-
-def generate_transaction():
-    """Generate a simulated financial transaction."""
-
-    return {
-        "transaction_id": str(uuid.uuid4()),
-        "customer_id": random.choice(CUSTOMERS),
-        "amount": round(random.uniform(10, 15000), 2),
-        "city": random.choice(CITIES),
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
-
-
-def create_producer():
-    """Create a connection to the Kafka broker."""
-
-    return KafkaProducer(
-        bootstrap_servers=KAFKA_BROKER,
-        value_serializer=lambda value: json.dumps(value).encode("utf-8"),
-        acks="all",
-        retries=5,
-    )
 
 
 def main():
