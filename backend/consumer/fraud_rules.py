@@ -10,12 +10,12 @@ customer_transactions = defaultdict(deque)
 
 
 def detect_fraud(transaction):
-    
     alerts = []
 
-    amount = transaction["amount"]
+    amount = float(transaction["amount"])
     customer_id = transaction["customer_id"]
     city = transaction["city"]
+
     transaction_time = datetime.fromisoformat(
         transaction["timestamp"]
     )
@@ -29,10 +29,7 @@ def detect_fraud(transaction):
         minutes=GEO_WINDOW_MINUTES
     )
 
-    while (
-        history
-        and history[0]["timestamp"] < geo_cutoff
-    ):
+    while history and history[0]["timestamp"] < geo_cutoff:
         history.popleft()
 
     time_cutoff = transaction_time - timedelta(
@@ -42,15 +39,21 @@ def detect_fraud(transaction):
     recent_transactions = [
         item
         for item in history
-        if time_cutoff < item["timestamp"] <= transaction_time
+        if time_cutoff < item["timestamp"] < transaction_time
     ]
 
     if len(recent_transactions) + 1 >= TRANSACTION_LIMIT:
         alerts.append("TEMPO_60s")
 
+    recent_geo_transactions = [
+        item
+        for item in history
+        if geo_cutoff <= item["timestamp"] < transaction_time
+    ]
+
     if any(
         item["city"] != city
-        for item in history
+        for item in recent_geo_transactions
     ):
         alerts.append("GEO_10m")
 
