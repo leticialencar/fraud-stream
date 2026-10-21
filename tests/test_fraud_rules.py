@@ -29,7 +29,7 @@ def run_test(test_name, transactions, expected_alerts):
     for transaction in transactions:
         alerts = detect_fraud(transaction)
 
-    print(f"\\nTeste: {test_name}")
+    print(f"\nTeste: {test_name}")
     print(f"Alertas encontrados: {alerts}")
     print(f"Alertas esperados:  {expected_alerts}")
 
