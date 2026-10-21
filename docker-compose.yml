@@ -27,7 +27,7 @@ services:
     image: postgres:18
     container_name: fraud-stream-postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_DB: fraud_stream
       POSTGRES_USER: fraud_user
