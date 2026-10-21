@@ -2,12 +2,12 @@ import time
 
 from kafka.errors import KafkaError
 
-from kafka_client import (
+from backend.producer.kafka_client import (
     create_producer,
     KAFKA_BROKER,
     KAFKA_TOPIC,
 )
-from transaction import generate_transaction
+from backend.producer.transaction import generate_transaction
 
 TRANSACTION_INTERVAL = 3
 
