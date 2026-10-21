@@ -2,7 +2,7 @@ import random
 import uuid
 from datetime import datetime, timezone
 
-CUSTOMERS = [f"C{i:03d}" for i in range(1, 201)]
+CUSTOMERS = [f"C{i:03d}" for i in range(1, 301)]
 
 CITIES = [
     "Juazeiro do Norte",

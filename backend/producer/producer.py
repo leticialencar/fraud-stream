@@ -9,7 +9,7 @@ from backend.producer.kafka_client import (
 )
 from backend.producer.transaction import generate_transaction
 
-TRANSACTION_INTERVAL = 8
+TRANSACTION_INTERVAL = 2
 
 def main():
     producer = None
